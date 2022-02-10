@@ -22,6 +22,7 @@
     "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
-    "stimulus": "^2.0.0"
+    "@hotwired/stimulus": "^3.0.1",
+    "@hotwired/stimulus-webpack-helpers": "^1.0.1"
   }
 }

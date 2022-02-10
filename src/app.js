@@ -1,8 +1,13 @@
-// Tips: use 'sjw' shortcut to build the stimulus setup
-import { Application } from 'stimulus'
-import { definitionsFromContext } from 'stimulus/webpack-helpers'
+// DON'T CHANGE THIS LINE
+window.myBadAssGarage = "yanns-old-bangas";
+if (myBadAssGarage) document.querySelector("#garage-name").innerText = myBadAssGarage.replace(/-/g, " ");
+// //////////////////////
+
+// Tips: use 'sih' shortcut to build the stimulus setup
+import { Application } from '@hotwired/stimulus'
+import { definitionsFromContext } from '@hotwired/stimulus-webpack-helpers'
 
 // initialize StimulusJS
-const application = Application.start()
+window.Stimulus = Application.start()
 const context = require.context('./controllers', true, /\.js$/)
-application.load(definitionsFromContext(context))
+Stimulus.load(definitionsFromContext(context))

@@ -1,58 +1,93 @@
 // DON'T CHANGE THIS LINE
-const myBadAssGarage = "vindiesel-mod-shop";
-if (myBadAssGarage) document.querySelector("#garage-name").innerText = myBadAssGarage.replace(/-/g, " ");
+const myBadAssGarage = window.myBadAssGarage;
 // //////////////////////
+
 
 // //////////////////////
 // Pseudo-code
 // //////////////////////
 
-// ✅ Initiatize a Stimulus controller
-// ✅ Initialize a data-controller in HTML
+// ✅ 0. Add the data-controller in the HTML!
 
-// SHOW CARS
+// ///
+// Get all the cars
+// ///
 
-// ✅ 1. Target some elements (cars-list)
-// ✅ 2. We don't listen to any event! load the cars at refresh
-// ✅ 2.5 Fetch the cars from our garage API
-// ✅ 3. Insert the cars inside our cars-list
+// ✅ 1. Select the car list div (Stimulus Target)
 
-// ADD NEW CAR
+// ✅ 2. No event listener, we get the car when the refresh (= connect)
+// Create a method getCars in the controller
 
-// ✅ 1. Target some elements (4 inputs, 1 button)
-// ✅ 2. Listen to a click on the button
-// ✅ 2.5 POST a new car to the garage API
-// ✅ 3. SHOW CARS
+// ✅ 2.5 Fetch the wagon-garage API (get array of cars)
+
+// ✅ 3. For each cars, insert a car cards into the car list div
+
+// ///
+// Add a new car
+// ///
+
+// ✅ 1. Select 4 inputs (maybe the add a car?) (Stimulus Target)
+
+// ✅ 2. Listen to a click on "add a car" (Stimulus Action)
+
+// ✅ 2.5 POST request to add the car in the garage API
+
+// ✅ Display the cars: do the "Get all the cars" step!
 
 // //////////////////////
 // Code
 // //////////////////////
-// Tips: use 'sjc' shortcut to build the controller
-import { Controller } from 'stimulus'
+// Tips: use 'sch' shortcut to build the controller
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = [ 'carsList', 'brand', 'owner', 'plate','model', 'submit' ]
+  static targets = [ 'sickGarage', 'brand', 'model', 'owner', 'plate' ]
 
   connect() {
+    this.url = `https://wagon-garage-api.herokuapp.com/${myBadAssGarage}/cars`;
     console.log('Hello from garage_controller.js')
-    console.log(this.carsListTarget)
+    console.log(this.sickGarageTarget)
     this.getCars();
   }
 
   getCars() {
-    const url = `https://wagon-garage-api.herokuapp.com/${myBadAssGarage}/cars`
-    fetch(url)
+    console.log("getCars");
+    fetch(this.url)
       .then(response => response.json())
-      .then((data => {
-        console.log(data)
+      .then((data) => {
+        console.log(data); // an array of objects
         this.displayCars(data);
-      }))
+      })
+  }
+
+  addCar(event) {
+    event.preventDefault()
+    const car = {
+      brand: this.brandTarget.value,
+      model: this.modelTarget.value,
+      owner: this.ownerTarget.value,
+      plate: this.plateTarget.value
+    };
+
+    const options = { 
+      method: "POST", 
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(car)
+    }
+
+    fetch(this.url, options)
+      .then(response => response.json())
+      .then((data) => {
+        console.log(data)
+        // display all cars
+        this.sickGarageTarget.innerHTML = "";
+        this.getCars();
+      })
   }
 
   displayCars(cars) {
-    this.carsListTarget.innerHTML = ''
     cars.forEach((car) => {
-      this.carsListTarget.insertAdjacentHTML(
+      this.sickGarageTarget.insertAdjacentHTML(
         "beforeend",
         `<div class="car">
           <div class="car-image">
@@ -64,30 +99,7 @@ export default class extends Controller {
             <p><strong>Plate:</strong>${car.plate}</p>
           </div>
         </div>`
-      );
-    })
-  }
-
-  addCar(event) {
-    event.preventDefault()
-    console.log(event)
-    const url = `https://wagon-garage-api.herokuapp.com/${myBadAssGarage}/cars`
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        "brand": this.brandTarget.value,
-        "model": this.modelTarget.value,
-        "owner": this.ownerTarget.value,
-        "plate": this.plateTarget.value
-      })
-    })
-      .then(response => response.json())
-      .then((data => {
-        console.log(data)
-        this.getCars();
-      }))
+        );
+    });
   }
 }
